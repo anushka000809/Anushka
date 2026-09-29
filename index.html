@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Birthday Surprise</title>
+    <style>
+        /* --- General Styles (Global Animated Background) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, #ff416c, #ff4b2b, #c11043, #790022);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            width: 100vw;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+            padding: 40px 0;
+            box-sizing: border-box;
+            background-color: transparent;
+        }
+
+        .active-screen {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- Glassmorphism Cards --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* --- Screen 1: Passcode (Super Unique Polaroid) --- */
+        .login-container {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+            z-index: 20;
+        }
+
+        .polaroid {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 15px 50px 15px;
+            position: relative;
+            border-radius: 12px;
+            border: 3px solid #fff;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 65, 108, 0.5);
+            color: #d13038;
+            font-weight: bold;
+            font-size: 22px;
+            font-family: 'Brush Script MT', cursive;
+            transform: rotate(-3deg);
+            animation: float 3s ease-in-out infinite;
+            z-index: 15;
+        }
+
+        .polaroid::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 100px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 2px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-3deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(-1deg);
+            }
+        }
+
+        .polaroid img {
+            width: 220px;
+            height: 270px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .bouquet {
+            position: absolute;
+            bottom: -20px;
+            right: -25px;
+            font-size: 55px;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.4));
+        }
+
+        /* --- Keypad Direct Touch Fix --- */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            position: relative;
+            z-index: 999;
+        }
+
+        .keypad button {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 26px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1000;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            pointer-events: auto;
+        }
+
+        .keypad button:active {
+            background: white !important;
+            color: #ff416c !important;
+            transform: scale(0.95);
+        }
+
+        .pin-display {
+            font-size: 40px;
+            letter-spacing: 12px;
+            margin-bottom: 25px;
+            min-height: 50px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            margin-top: 30px;
+            padding: 15px 35px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #d13038;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: 0.4s;
+            position: relative;
+            z-index: 30;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            background: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Screen 3: Cake & Video Style Fireworks --- */
+        .cake-container {
+            cursor: pointer;
+            transition: transform 0.3s;
+            z-index: 20;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .cake-container:hover {
+            transform: scale(1.05);
+        }
+
+        .cake-img {
+            width: 250px;
+        }
+
+        .candle-flames {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 35px;
+            z-index: 25;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .flame-up {
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        .fireworks-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            display: none;
+        }
+
+        .burst {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: transparent;
+            border-radius: 50%;
+            box-shadow: 0 -50px 0 #fff, 0 50px 0 #fff, 50px 0 0 #ffebcd, -50px 0 0 #ffebcd, 35px 35px 0 #ffd700, -35px -35px 0 #ffd700, 35px -35px 0 #ff69b4, -35px 35px 0 #ff69b4;
+            animation: explode 1s ease-out infinite;
+        }
+
+        .burst:nth-child(even) {
+            box-shadow: 0 -60px 0 #00ffff, 0 60px 0 #00ffff, 60px 0 0 #ff00ff, -60px 0 0 #ff00ff, 45px 45px 0 #ffff00, -45px -45px 0 #ffff00, 45px -45px 0 #00ff00, -45px 45px 0 #00ff00;
+            animation-delay: 0.3s;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0.1);
+                opacity: 1;
+            }
+
+            70% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        .popup-message {
+            position: absolute;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Brush Script MT', cursive;
+            color: #d13038;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            white-space: nowrap;
+            z-index: 25;
+            transition: all 1s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .bottom-right-icon {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: conic-gradient(white, yellow, lime, aqua, white);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            cursor: pointer;
+            animation: spin 4s linear infinite;
+            border: 3px solid white;
+            display: none;
+            touch-action: manipulation;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* --- Media & Music Grid --- */
+        .media-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            z-index: 10;
+        }
+
+        .gallery {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .gallery img {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid white;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        .music-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            max-width: 950px;
+            z-index: 10;
+            margin-top: 20px;
+        }
+
+        .music-card {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            padding: 20px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            transition: 0.4s ease;
+        }
+
+        .music-thumb {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .music-title {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 24px;
+            color: #fff;
+            margin: 5px 0 12px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        audio {
+            width: 100%;
+            height: 32px;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        /* --- Envelope & Final Screen --- */
+        .envelope-wrapper {
+            cursor: pointer;
+            z-index: 20;
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.05);
+        }
+
+        .envelope-wrapper img {
+            width: 250px;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.4));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .envelope-text {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 35px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+
+        .stylish-msg-container {
+            max-width: 700px;
+            padding: 50px;
+            border-radius: 20px;
+            z-index: 15;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .stylish-msg-container h1 {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 50px;
+            color: #ffebcd;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .stylish-msg-container p {
+            font-size: 22px;
+            line-height: 1.8;
+            color: #ffe4e1;
+            font-style: italic;
+        }
+
+        .ultimate-glass-card {
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 2px solid rgba(255, 65, 108, 0.7);
+            border-radius: 30px;
+            box-shadow: 0 0 50px rgba(255, 65, 108, 0.6), inset 0 0 20px rgba(255, 65, 108, 0.3);
+            padding: 50px;
+            max-width: 650px;
+            position: relative;
+            overflow: hidden;
+            z-index: 15;
+        }
+
+        .beating-heart {
+            font-size: 80px;
+            margin-bottom: 10px;
+            animation: heartbeat 1.2s infinite;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.9));
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            30%,
+            60%,
+            100% {
+                transform: scale(1);
+            }
+
+            15%,
+            45% {
+                transform: scale(1.3);
+            }
+        }
+
+        .neon-glow-text {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 55px;
+            margin: 15px 0;
+            color: #fff;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff416c, 0 0 40px #ff416c, 0 0 60px #ff416c;
+            animation: neonPulse 2s infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff416c, 0 0 40px #ff416c;
+            }
+
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #ff416c, 0 0 40px #ff416c, 0 0 60px #ff416c, 0 0 80px #ff416c;
+            }
+        }
+
+        .final-para {
+            font-size: 22px;
+            line-height: 1.7;
+            color: #ffe4e1;
+            margin-bottom: 35px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Passcode / Login Screen (First Page) -->
+    <div id="login-screen" class="screen active-screen">
+        <div class="login-container glass-card">
+            <div class="polaroid">
+                <img src="https://i.ibb.co/Zp0CjTDt/IMG-20260929-WA0031.jpg" alt="Birthday Person">
+                <p>Happy Birthday Januuuu ❤️</p>
+                <div class="bouquet">💐</div>
+            </div>
+            <div>
+                <h2 style="font-size: 28px; margin-bottom: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Enter Password
+                </h2>
+                <div class="pin-display" id="pin-display"></div>
+                <div class="keypad">
+                    <button type="button" onclick="handleInput('1')">1</button>
+                    <button type="button" onclick="handleInput('2')">2</button>
+                    <button type="button" onclick="handleInput('3')">3</button>
+                    <button type="button" onclick="handleInput('4')">4</button>
+                    <button type="button" onclick="handleInput('5')">5</button>
+                    <button type="button" onclick="handleInput('6')">6</button>
+                    <button type="button" onclick="handleInput('7')">7</button>
+                    <button type="button" onclick="handleInput('8')">8</button>
+                    <button type="button" onclick="handleInput('9')">9</button>
+                    <button type="button" onclick="handleInput('C')">C</button>
+                    <button type="button" onclick="handleInput('0')">0</button>
+                    <button type="button" onclick="handleInput('OK')">✔</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Letter Screen -->
+    <div id="letter-screen" class="screen">
+        <div class="glass-card" style="max-width: 900px; display: flex; gap: 40px; flex-wrap: wrap;">
+            <div style="flex: 1; text-align: left; min-width: 300px;">
+                <h1
+                    style="font-family: 'Brush Script MT', cursive; font-size: 45px; margin-top: 0; text-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+                    Happy Birthday Januuu 🎉</h1>
+                <p style="font-size: 20px; line-height: 1.6;">Happy Birthday 🎂
+                    Wish you all the happiness, health, and success in the world. Tumne meri life ko hamesha khubsoorat
+                    banaya hai, and I
+                    truly wish the best for you 💕🎀✨💫....I hope this little surprise brings a smile to your face 😊
+                </p>
+                <button class="btn" onclick="nextScreen('letter-screen', 'cake-screen')">Click here for Surprise
+                    🎁</button>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 15px; min-width: 300px;">
+                <img src="https://i.ibb.co/4gYCNGsQ/IMG-20260929-WA0025.jpg" style="border-radius:10px;">
+                <img src="" style="border-radius:10px;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Cake Screen -->
+    <div id="cake-screen" class="screen">
+        <!-- Catbox Audio Link -->
+        <audio id="cake-bg-music" loop>
+            <source src="https://files.catbox.moe/ktiubo.mp3" type="audio/mpeg">
+        </audio>
+
+        <div class="fireworks-container" id="fireworks-bg">
+            <div class="burst" style="top: 20%; left: 30%;"></div>
+            <div class="burst" style="top: 50%; left: 15%;"></div>
+            <div class="burst" style="top: 30%; left: 70%;"></div>
+            <div class="burst" style="top: 70%; left: 80%;"></div>
+            <div class="burst" style="top: 10%; left: 50%;"></div>
+            <div class="burst" style="top: 80%; left: 40%;"></div>
+        </div>
+
+        <h1 style="z-index: 20; position: relative; font-size: 45px; text-shadow: 0 2px 5px rgba(0,0,0,0.5);"
+            id="wish-title">Make a Wish 🌟</h1>
+
+        <div id="messages-container"></div>
+
+        <div class="cake-container" onclick="blowCandles()">
+            <div class="candle-flames" id="flames"><span class="flame-up">🔥</span><span class="flame-up"
+                    style="margin-top: -15px;">🔥</span><span class="flame-up">🔥</span></div>
+            <img class="cake-img"
+                src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTJvbmJkbG9mbWFjb2hiYnpubTk2bzYybHZoMXJodXVqdHI5Z3F4OSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/BjK1aHXUBmxYNgyGYD/giphy.gif"
+                alt="Cake">
+        </div>
+
+        <p style="margin-top: 20px; font-size: 24px; font-weight: bold; z-index: 20; position: relative; text-shadow: 0 2px 4px rgba(0,0,0,0.5);"
+            id="cake-instruction">Click the cake to blow the candles!</p>
+        <button id="next-page-btn" class="btn" style="display:none; margin-top: 30px;"
+            onclick="nextScreen('cake-screen', 'extra-screen')">See Our Memories ✨</button>
+        <div class="bottom-right-icon" id="magic-icon" onclick="showPopupMessages()" title="Click Me!"></div>
+    </div>
+
+    <!-- Memories Screen -->
+    <div id="extra-screen" class="screen">
+        <h1 style="font-size: 45px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;">Our Cute Memories 📸
+        </h1>
+        <p style="margin-bottom: 30px; font-size: 20px; z-index: 10;">Our Best Clicks 💗🫶🏻</p>
+        <div class="media-container">
+            <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZG9pNXlhdXo0YTFkNXF6NjM0YW1rZHNxdThwMXI5Nmszd2E0cWs2aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/d6RZ1E5AT6JlZrP4z3/giphy.gif"
+                alt="Cute Cat Cake"
+                style="width: 100%; max-width: 350px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
+            <div class="gallery">
+                <img src="https://i.ibb.co/ZzhsLns1/IMG-20260929-WA0023.jpg"><img
+                    src="https://i.ibb.co/S7HYsw3P/IMG-20260929-WA0024.jpg">
+                <img src="https://i.ibb.co/zWQHDLBB/IMG-20260929-WA0030.jpg"><img
+                    src="https://i.ibb.co/1YLVp3k5/IMG-20260929-WA0027.jpg">
+                <img src="https://i.ibb.co/zHVQjRHc/IMG-20260929-WA0022.jpg"><img
+                    src="https://i.ibb.co/4g3HYr85/IMG-20260929-WA0026.jpg">
+            </div>
+        </div>
+        <button class="btn" style="margin-bottom: 30px;" onclick="nextScreen('extra-screen', 'music-screen')">Listen to
+            Our Playlist 🎵</button>
+    </div>
+
+    <!-- Music Playlist Page -->
+    <div id="music-screen" class="screen">
+        <h1 style="font-size: 45px; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10;">Our Special Playlist 🎶</h1>
+        <p style="margin-bottom: 20px; font-size: 20px; z-index: 10;">Some magical tracks that feel like us 🥺🫂🫶🏻</p>
+
+        <div class="music-grid">
+            <div class="music-card">
+                <img class="music-thumb"
+                    src="https://i.ibb.co/vvwr25p4/who-came-first-bubu-dudu-or-milk-mocha-v0-zcg663n1gp6c1.jpg"
+                    alt="Thumbnail">
+                <p class="music-title">🏵️✨🩷🌹🏵️</p>
+                <audio controls>
+                    <source src="https://files.catbox.moe/3ve52u.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+            <div class="music-card">
+                <img class="music-thumb"
+                    src="https://i.ibb.co/YF3jRgp0/fposter-small-wall-texture-square-product-600x600.jpg"
+                    alt="Thumbnail">
+                <p class="music-title">🌼❤️‍🩹🥺😭</p>
+                <audio controls>
+                    <source src="https://files.catbox.moe/hl36xo.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+            <div class="music-card">
+                <img class="music-thumb" src="https://i.ibb.co/Xr35ssQx/9d926cf33a8101e204322fde8dd81f41.jpg"
+                    alt="Thumbnail">
+                <p class="music-title">😚💞🎀😽</p>
+                <audio controls>
+                    <source src="https://files.catbox.moe/ovu5u4.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+            <div class="music-card">
+                <img class="music-thumb"
+                    src="https://i.ibb.co/RW0sNtb/bg-f8f8f8-flat-750x-075-f-pad-750x1000-f8f8f8.jpg" alt="Thumbnail">
+                <p class="music-title">💗✨💫💞</p>
+                <audio controls>
+                    <source src="https://files.catbox.moe/t4ibmq.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+            <div class="music-card">
+                <img class="music-thumb" src="https://i.ibb.co/ZzmCgWDj/7b4e45edfbedd4efbcc4bab78fbefaec.jpg"
+                    alt="Thumbnail">
+                <p class="music-title">🥹💕❤️🫠🙈</p>
+                <audio controls>
+                    <source src="https://files.catbox.moe/2ijjel.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+            <div class="music-card">
+                <img class="music-thumb"
+                    src="https://i.ibb.co/rKDQsSn3/Screenshot-2026-07-28-23-46-13-18-1c337646f29875672b5a61192b9010f9.jpg"
+                    alt="Thumbnail">
+                <p class="music-title">❤️‍🔥💞❣️❤️</p>
+                <audio controls>
+                    <source src="https://files.catbox.moe/9dfun0.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+
+        <button class="btn" style="margin-top: 30px;"
+            onclick="nextScreen('music-screen', 'special-message-screen')">Next 🥺💫</button>
+    </div>
+
+    <!-- Envelope Screen -->
+    <div id="special-message-screen" class="screen">
+        <div class="envelope-wrapper" id="envelope-btn" onclick="openSecretMessage()">
+            <img src="https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MGY5bjA5eXlvaDg3NG52MTRubXlmNnYzb2F0cWN4cWFwczhmNXAxOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/5oqyfUy11JPUcBNMHo/giphy.gif"
+                alt="Love Envelope">
+            <div class="envelope-text">Tap to open... 💌</div>
+        </div>
+        <div class="stylish-msg-container" id="secret-message-box">
+            <h1>Happy Birthday My Gurllll 💗💕</h1>
+            <p>Happy Birthday, Januuuu ❤️ ..Sach kahun toh tumhare aane se meri puri life hi badal gayi hai....Tum
+                meri sab kuch ho....
+                Har choti-choti baat par jhagadna aur phir chupke se manana... yeh sab tumhare bina adhoora lagta hai.
+                Bhagwan se yahi
+                dua hai ki tum hamesha aise hi hasti raho aur humesha mere paas raho 🥺😞💕💗... Enjoy your day, Babeeee
+                ..... I love
+                youhhh sooo muchhh💗💞🎀🫂🫶🏻</p>
+            <button class="btn" style="margin-top: 40px;"
+                onclick="nextScreen('special-message-screen', 'final-screen')">One Last Thing 💌</button>
+        </div>
+    </div>
+
+    <!-- Final Screen -->
+    <div id="final-screen" class="screen">
+        <div class="ultimate-glass-card">
+            <div class="beating-heart">❤️</div>
+            <h1 class="neon-glow-text">I Love You ❤️</h1>
+            <p class="final-para">Kal tak socha tha ki yeh din tumhare saath kitne pyaar se celebrate karunga, par
+                shayad kismat ko abhi kuch aur manzoor
+                tha. Par situation chahe jo bhi ho, mera pyaar aur tumhare liye respect kabhi kam nahi ho sakti.... Jab
+                mai yeh bana
+                raha tha, tab se lekar abhi tak mera ek hi thought tha . tumhare chehre ki wo pyari si smile. Jo bhi
+                humare beech hua,
+                uspar mera bas nahi chala, par tum mere dil ke sabse kareeb thi, ho, aur hamesha rahogi. Main tum par
+                koi pressure nahi
+                dalna chahta, na hi aaj ke din koi purani baat karke tumhe udaas karna chahta hoon. Bas itna chahta hoon
+                ki tum hamesha
+                khush raho chahe main tumhari life me rahoon ya na rahoon. Maine tumse sacha pyaar kiya hai, aur mera
+                dil hamesha
+                tumhara hi intezaar karega. Happy Birthday once again… tum hamesha special rahogi...... I Love You Januu
+                ever ever and Forever
+                ✨💫🥺😭💞🫶🏻</p>
+            <!-- Restart Button -->
+            <button class="btn" style="margin-top: 10px;" onclick="restartSurprise()">🔄 Restart</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPin = "";
+        const correctPin = "0809"; // Passcode
+
+        function handleInput(val) {
+            if (val === "C") {
+                clearPin();
+            } else if (val === "OK") {
+                checkPin();
+            } else {
+                addPin(val);
+            }
+        }
+
+        function addPin(num) {
+            if (currentPin.length < 4) {
+                currentPin += num;
+                document.getElementById("pin-display").innerText = "•".repeat(currentPin.length);
+            }
+        }
+
+        function clearPin() {
+            currentPin = "";
+            document.getElementById("pin-display").innerText = "";
+        }
+
+        function checkPin() {
+            if (currentPin === correctPin) {
+                nextScreen('login-screen', 'letter-screen');
+            } else {
+                alert("Wrong Guess! Try again Januuuu😁😝");
+                clearPin();
+            }
+        }
+
+        function nextScreen(currentId, nextId) {
+            if (currentId === 'cake-screen') {
+                const cakeMusic = document.getElementById('cake-bg-music');
+                if (cakeMusic) {
+                    cakeMusic.pause();
+                    cakeMusic.currentTime = 0;
+                }
+            }
+
+            document.getElementById(currentId).classList.remove('active-screen');
+            document.getElementById(nextId).classList.add('active-screen');
+        }
+
+        function blowCandles() {
+            const cakeMusic = document.getElementById('cake-bg-music');
+            if (cakeMusic) {
+                cakeMusic.play().catch(error => {
+                    console.log("Audio play error:", error);
+                });
+            }
+
+            document.getElementById('flames').style.opacity = '0';
+            document.getElementById('fireworks-bg').style.display = 'block';
+            document.getElementById('wish-title').innerText = "Happy Birthday! 🎉";
+            document.getElementById('cake-instruction').innerText = "Make all your wishes come true!";
+            document.getElementById('next-page-btn').style.display = 'inline-block';
+            document.getElementById('magic-icon').style.display = 'block';
+        }
+
+        function openSecretMessage() {
+            document.getElementById('envelope-btn').style.display = 'none';
+            document.getElementById('secret-message-box').style.display = 'block';
+        }
+
+        function showPopupMessages() {
+            const messages = ["You're my everything ❤️", "Forever with you ✨", "You're so gorgeous! 😍", "My favorite person 🎂"];
+            const container = document.getElementById('messages-container');
+
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    const pop = document.createElement('div');
+                    pop.className = 'popup-message';
+                    pop.innerText = msg;
+                    pop.style.top = (30 + Math.random() * 40) + '%';
+                    pop.style.left = (20 + Math.random() * 60) + '%';
+                    container.appendChild(pop);
+
+                    setTimeout(() => {
+                        pop.style.transform = 'translate(-50%, -50%) scale(1)';
+                        pop.style.opacity = '1';
+                    }, 50);
+
+                    setTimeout(() => {
+                        pop.style.transform = 'translate(-50%, -50%) scale(0)';
+                        pop.style.opacity = '0';
+                        setTimeout(() => pop.remove(), 1000);
+                    }, 2500);
+                }, index * 800);
+            });
+        }
+
+        function restartSurprise() {
+            clearPin();
+            document.getElementById('flames').style.opacity = '1';
+            document.getElementById('fireworks-bg').style.display = 'none';
+            document.getElementById('wish-title').innerText = "Make a Wish 🌟";
+            document.getElementById('cake-instruction').innerText = "Click the cake to blow the candles!";
+            document.getElementById('next-page-btn').style.display = 'none';
+            document.getElementById('magic-icon').style.display = 'none';
+            document.getElementById('envelope-btn').style.display = 'flex';
+            document.getElementById('secret-message-box').style.display = 'none';
+
+            nextScreen('final-screen', 'login-screen');
+        }
+    </script>
+</body>
+
+</html>
